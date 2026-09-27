@@ -22,7 +22,7 @@ function dealPayload(form: FormData) {
     client_name: str(form, "client_name"),
     listing_id: str(form, "listing_id"),
     price: num(form, "price"),
-    stage: String(form.get("stage") || "Tiềm năng"),
+    stage: String(form.get("stage") || "Tiềm Năng"),
     priority: String(form.get("priority") || "Trung bình"),
     expected_close_date: str(form, "expected_close_date"),
     commission_rate: num(form, "commission_rate_pct") !== null ? Number(form.get("commission_rate_pct")) / 100 : 0.02,
@@ -51,7 +51,7 @@ export async function updateDealStage(id: string, stage: string) {
   const supabase = await createClient();
   const { data: deal } = await supabase.from("deals").update({ stage }).eq("id", id).select("*").single();
 
-  if (stage === "Đã chốt thành công" && deal) {
+  if (stage === "Hoàn Tất Giao Dịch" && deal) {
     await supabase.from("commissions").insert({
       created_by: deal.created_by,
       agent_id: deal.agent_id,

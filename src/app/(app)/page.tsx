@@ -42,7 +42,7 @@ export default async function DashboardPage() {
   ]);
 
   const dealList = (deals as Deal[]) ?? [];
-  const activeDeals = dealList.filter((d) => d.stage !== "Đã chốt thành công" && d.stage !== "Thất bại");
+  const activeDeals = dealList.filter((d) => d.stage !== "Hoàn Tất Giao Dịch" && d.stage !== "Chăm Sóc Tiếp");
   const expectedCommission = activeDeals.reduce((sum, d) => sum + (d.net_commission ?? 0), 0);
 
   const byStage = new Map<string, Deal[]>();

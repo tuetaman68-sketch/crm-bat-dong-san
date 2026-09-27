@@ -19,7 +19,7 @@ export const NAV_GROUPS: NavGroup[] = [
     label: "CRM",
     items: [
       { href: "/leads", label: "Khách tiềm năng", icon: "🎯" },
-      { href: "/nguoi-mua", label: "Hồ sơ người mua", icon: "🧑‍💼" },
+      { href: "/nguoi-mua", label: "Hồ Sơ Khách Hàng", icon: "🧑‍💼" },
       { href: "/nguoi-ban", label: "Hồ sơ người bán", icon: "🏡" },
     ],
   },

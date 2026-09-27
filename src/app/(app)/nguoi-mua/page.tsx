@@ -24,17 +24,17 @@ export default async function BuyerIntakesPage() {
   return (
     <div>
       <PageHeader
-        title="Hồ sơ người mua"
+        title="Hồ Sơ Khách Hàng"
         description="Nắm rõ ngân sách, khu vực và nhu cầu của từng khách mua ngay từ ngày đầu."
         actions={
-          <Modal triggerLabel="+ Thêm hồ sơ" title="Thêm hồ sơ người mua">
+          <Modal triggerLabel="+ Thêm hồ sơ" title="Thêm hồ sơ khách hàng">
             <BuyerIntakeForm leads={leadList} propertyTypes={propertyTypes} agents={agentList} action={createBuyerIntake} />
           </Modal>
         }
       />
 
       {list.length === 0 ? (
-        <EmptyState message="Chưa có hồ sơ người mua nào." />
+        <EmptyState message="Chưa có hồ sơ khách hàng nào." />
       ) : (
         <Table head={["Họ tên", "Ngân sách", "Khu vực", "Loại BĐS", "Thời gian", "Phụ trách", ""]}>
           {list.map((b) => (

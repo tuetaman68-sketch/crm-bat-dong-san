@@ -3,9 +3,41 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 
+export async function createFloor(form: FormData) {
+  const supabase = await createClient();
+  await supabase.from("floors").insert({ name: String(form.get("name")) });
+  revalidatePath("/nhan-su");
+}
+
+export async function createDepartment(form: FormData) {
+  const supabase = await createClient();
+  const floorId = String(form.get("floor_id") || "").trim();
+  await supabase.from("departments").insert({ name: String(form.get("name")), floor_id: floorId || null });
+  revalidatePath("/nhan-su");
+}
+
 export async function createTeam(form: FormData) {
   const supabase = await createClient();
-  await supabase.from("teams").insert({ name: String(form.get("name")) });
+  const departmentId = String(form.get("department_id") || "").trim();
+  await supabase.from("teams").insert({ name: String(form.get("name")), department_id: departmentId || null });
+  revalidatePath("/nhan-su");
+}
+
+export async function updateDepartmentFloor(departmentId: string, floorId: string) {
+  const supabase = await createClient();
+  await supabase
+    .from("departments")
+    .update({ floor_id: floorId || null })
+    .eq("id", departmentId);
+  revalidatePath("/nhan-su");
+}
+
+export async function updateTeamDepartment(teamId: string, departmentId: string) {
+  const supabase = await createClient();
+  await supabase
+    .from("teams")
+    .update({ department_id: departmentId || null })
+    .eq("id", teamId);
   revalidatePath("/nhan-su");
 }
 

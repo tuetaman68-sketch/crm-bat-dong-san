@@ -54,7 +54,7 @@ export function DealForm({
       </Field>
       <div className="grid grid-cols-2 gap-3">
         <Field label="Giai đoạn" htmlFor="stage">
-          <Select id="stage" name="stage" defaultValue={deal?.stage ?? "Tiềm năng"}>
+          <Select id="stage" name="stage" defaultValue={deal?.stage ?? "Tiềm Năng"}>
             {DEAL_STAGES.map((s) => (
               <option key={s} value={s}>
                 {s}

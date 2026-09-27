@@ -51,7 +51,7 @@ export default async function CommissionsPage() {
       </Card>
 
       {list.length === 0 ? (
-        <EmptyState message="Chưa có hoa hồng nào — hoa hồng sẽ tự động tạo khi giao dịch chuyển sang Đã chốt thành công." />
+        <EmptyState message="Chưa có hoa hồng nào — hoa hồng sẽ tự động tạo khi giao dịch chuyển sang Hoàn Tất Giao Dịch." />
       ) : (
         <Table head={["Giao dịch", "Khách hàng", "Ngày chốt", "Hoa hồng gộp", "Chia sàn", "Hoa hồng ròng", "Trạng thái", "Ngày thanh toán"]}>
           {list.map((c) => (

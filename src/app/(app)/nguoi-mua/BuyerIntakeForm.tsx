@@ -107,7 +107,7 @@ export function BuyerIntakeForm({
         <Textarea id="notes" name="notes" defaultValue={intake?.notes ?? ""} />
       </Field>
       <Button type="submit" disabled={pending} className="mt-1 self-start">
-        {pending ? "Đang lưu…" : "Lưu hồ sơ người mua"}
+        {pending ? "Đang lưu…" : "Lưu hồ sơ khách hàng"}
       </Button>
     </form>
   );

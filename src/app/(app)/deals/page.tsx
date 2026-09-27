@@ -29,10 +29,10 @@ export default async function DealsPage({ searchParams }: { searchParams: Promis
   for (const s of DEAL_STAGES) byStage.set(s, []);
   for (const d of list) byStage.get(d.stage)?.push(d);
 
-  const activeDeals = list.filter((d) => d.stage !== "Đã chốt thành công" && d.stage !== "Thất bại");
+  const activeDeals = list.filter((d) => d.stage !== "Hoàn Tất Giao Dịch" && d.stage !== "Chăm Sóc Tiếp");
   const totalPipelineValue = activeDeals.reduce((sum, d) => sum + (d.price ?? 0), 0);
   const wonThisMonth = list.filter(
-    (d) => d.stage === "Đã chốt thành công" && d.created_at.slice(0, 7) === new Date().toISOString().slice(0, 7)
+    (d) => d.stage === "Hoàn Tất Giao Dịch" && d.created_at.slice(0, 7) === new Date().toISOString().slice(0, 7)
   ).length;
 
   return (

@@ -1,7 +1,21 @@
 export type UserRole = "admin" | "manager" | "agent";
 
+export interface Floor {
+  id: string;
+  name: string;
+  created_at: string;
+}
+
+export interface Department {
+  id: string;
+  floor_id: string | null;
+  name: string;
+  created_at: string;
+}
+
 export interface Team {
   id: string;
+  department_id: string | null;
   name: string;
   manager_id: string | null;
   created_at: string;
@@ -226,14 +240,14 @@ export const LEAD_STATUSES = [
 ] as const;
 
 export const DEAL_STAGES = [
-  "Tiềm năng",
-  "Dẫn xem nhà",
-  "Đã chào giá",
-  "Đàm phán",
-  "Đã ký hợp đồng",
-  "Đang hoàn tất",
-  "Đã chốt thành công",
-  "Thất bại",
+  "Tiềm Năng",
+  "Đã Chào Giá",
+  "Đang Đàm Phán",
+  "Đã Xem",
+  "Đặt Cọc",
+  "Kí Hợp Đồng",
+  "Hoàn Tất Giao Dịch",
+  "Chăm Sóc Tiếp",
 ] as const;
 
 export const DEAL_PRIORITIES = ["Thấp", "Trung bình", "Cao", "Khẩn cấp"] as const;

@@ -1,18 +1,33 @@
 -- CRM Bất động sản — Postgres / Supabase schema (v2)
--- Kiến trúc cho MỘT doanh nghiệp/sàn giao dịch với tới ~100+ nhân sự:
--- Admin (ban giám đốc) > Trưởng nhóm (quản lý team) > Nhân viên/môi giới.
+-- Kiến trúc cho MỘT doanh nghiệp với tới ~100+ nhân sự, phân cấp:
+-- Sàn (floor) > Phòng (department) > Nhóm (team) > Nhân viên.
+-- Vai trò: Admin (ban giám đốc, thấy toàn bộ) > Trưởng nhóm (quản lý 1 nhóm) > Nhân viên/môi giới.
 -- Chạy trong Supabase SQL Editor hoặc `supabase db push`.
 
 create extension if not exists "pgcrypto";
 
 -- ========================================================================
--- 1. Đội ngũ & phân quyền
+-- 1. Cơ cấu tổ chức: Sàn > Phòng > Nhóm & phân quyền
 -- ========================================================================
 
 create type user_role as enum ('admin', 'manager', 'agent');
 
+create table floors (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  created_at timestamptz default now()
+);
+
+create table departments (
+  id uuid primary key default gen_random_uuid(),
+  floor_id uuid references floors on delete cascade,
+  name text not null,
+  created_at timestamptz default now()
+);
+
 create table teams (
   id uuid primary key default gen_random_uuid(),
+  department_id uuid references departments on delete set null,
   name text not null,
   manager_id uuid, -- gán sau khi manager có profile
   created_at timestamptz default now()
@@ -193,7 +208,7 @@ create table deals (
   deal_name text not null,
   client_name text,
   price numeric,
-  stage text not null default 'Tiềm năng', -- Tiềm năng, Dẫn xem nhà, Đã chào giá, Đàm phán, Đã ký hợp đồng, Đang hoàn tất, Đã chốt thành công, Thất bại
+  stage text not null default 'Tiềm Năng', -- Tiềm Năng, Đã Chào Giá, Đang Đàm Phán, Đã Xem, Đặt Cọc, Kí Hợp Đồng, Hoàn Tất Giao Dịch, Chăm Sóc Tiếp
   priority text not null default 'Trung bình', -- Thấp, Trung bình, Cao, Khẩn cấp
   expected_close_date date,
   commission_rate numeric default 0.02,
@@ -309,6 +324,18 @@ select stage, count(*) as total, coalesce(sum(price),0) as total_price from deal
 -- Admin: thấy toàn bộ. Trưởng nhóm (manager): thấy dữ liệu trong team mình.
 -- Nhân viên (agent): chỉ thấy bản ghi do mình tạo hoặc được giao (assigned/agent_id).
 -- ========================================================================
+
+alter table floors enable row level security;
+create policy floors_read on floors for select using (true);
+create policy floors_admin_write on floors for insert with check (is_admin());
+create policy floors_admin_update on floors for update using (is_admin());
+create policy floors_admin_delete on floors for delete using (is_admin());
+
+alter table departments enable row level security;
+create policy departments_read on departments for select using (true);
+create policy departments_admin_write on departments for insert with check (is_admin());
+create policy departments_admin_update on departments for update using (is_admin());
+create policy departments_admin_delete on departments for delete using (is_admin());
 
 alter table teams enable row level security;
 create policy teams_read on teams for select using (true);
