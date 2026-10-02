@@ -43,6 +43,7 @@ export const NAV_GROUPS: NavGroup[] = [
     items: [
       { href: "/hoa-hong", label: "Hoa hồng", icon: "💰" },
       { href: "/marketing", label: "Hiệu quả Marketing", icon: "📣" },
+      { href: "/gui-zalo", label: "Gửi tin nhắn Zalo", icon: "💬" },
     ],
   },
   {

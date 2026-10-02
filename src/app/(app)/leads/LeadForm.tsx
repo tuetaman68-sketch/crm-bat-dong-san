@@ -92,6 +92,10 @@ export function LeadForm({
       <Field label="Ghi chú" htmlFor="notes">
         <Textarea id="notes" name="notes" defaultValue={lead?.notes ?? ""} />
       </Field>
+      <label className="flex items-center gap-2 text-sm">
+        <input type="checkbox" name="consent_marketing" defaultChecked={lead?.consent_marketing ?? false} className="h-4 w-4" />
+        Đồng ý nhận tin marketing (bắt buộc để đưa vào danh sách gửi Zalo hàng loạt)
+      </label>
       <Button type="submit" disabled={pending} className="mt-1 self-start">
         {pending ? "Đang lưu…" : "Lưu lead"}
       </Button>

@@ -21,6 +21,7 @@ function leadPayload(form: FormData) {
     next_follow_up: str(form, "next_follow_up"),
     assigned_agent_id: str(form, "assigned_agent_id"),
     notes: str(form, "notes"),
+    consent_marketing: form.get("consent_marketing") === "on",
   };
 }
 

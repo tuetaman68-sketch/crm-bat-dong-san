@@ -55,6 +55,7 @@ export interface Lead {
   status: string;
   next_follow_up: string | null;
   notes: string | null;
+  consent_marketing: boolean;
   created_at: string;
 }
 
@@ -225,6 +226,23 @@ export interface MarketingCampaign {
   deals_closed: number;
   revenue_generated: number;
   created_at: string;
+}
+
+export interface ZaloCampaign {
+  id: string;
+  created_by: string;
+  team_id: string | null;
+  name: string;
+  message_template: string;
+  created_at: string;
+}
+
+export interface ZaloCampaignRecipient {
+  id: string;
+  campaign_id: string;
+  lead_id: string;
+  status: "Chưa gửi" | "Đã gửi";
+  sent_at: string | null;
 }
 
 export const LEAD_STATUSES = [
