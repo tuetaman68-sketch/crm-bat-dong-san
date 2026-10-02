@@ -113,6 +113,7 @@ create table leads (
   status text not null default 'Lead mới', -- Lead mới, Đã liên hệ, Đã sàng lọc, Đã hẹn gặp, Đã lên lịch xem nhà, Đang thương lượng, Đang ký hợp đồng, Thành công, Không thành công
   next_follow_up date,
   notes text,
+  consent_marketing boolean not null default false, -- đồng ý nhận tin marketing, theo Nghị định 13/2023/NĐ-CP
   created_at timestamptz default now()
 );
 
@@ -310,6 +311,31 @@ create table marketing_campaigns (
 );
 
 -- ========================================================================
+-- 9b. Gửi tin nhắn hàng loạt qua Zalo
+-- Zalo không có API gửi tin tự động cho tài khoản cá nhân (chỉ Zalo OA doanh
+-- nghiệp mới có), nên đây là công cụ hỗ trợ: soạn sẵn nội dung theo từng
+-- khách, agent bấm "Mở Zalo" rồi tự gửi — vẫn lưu lại lịch sử đã gửi ai/khi nào.
+-- ========================================================================
+
+create table zalo_campaigns (
+  id uuid primary key default gen_random_uuid(),
+  created_by uuid not null default auth.uid() references profiles(id),
+  team_id uuid references teams,
+  name text not null,
+  message_template text not null, -- hỗ trợ biến {ten}
+  created_at timestamptz default now()
+);
+
+create table zalo_campaign_recipients (
+  id uuid primary key default gen_random_uuid(),
+  campaign_id uuid not null references zalo_campaigns on delete cascade,
+  lead_id uuid not null references leads on delete cascade,
+  status text not null default 'Chưa gửi', -- Chưa gửi, Đã gửi
+  sent_at timestamptz,
+  unique (campaign_id, lead_id)
+);
+
+-- ========================================================================
 -- 10. View tổng hợp
 -- ========================================================================
 
@@ -358,7 +384,7 @@ do $$
 declare t text;
 declare owner_col text;
 begin
-  foreach t in array array['leads','buyer_intakes','seller_intakes','listings','deals','commissions','tasks','appointments','open_houses']
+  foreach t in array array['leads','buyer_intakes','seller_intakes','listings','deals','commissions','tasks','appointments','open_houses','zalo_campaigns']
   loop
     execute format('alter table %I enable row level security', t);
 
@@ -387,6 +413,18 @@ alter table marketing_campaigns enable row level security;
 create policy marketing_select on marketing_campaigns for select using (true);
 create policy marketing_write on marketing_campaigns for all using (is_admin() or my_role() = 'manager') with check (is_admin() or my_role() = 'manager');
 
+-- Danh sách người nhận trong 1 chiến dịch Zalo: quyền đi theo chiến dịch cha.
+alter table zalo_campaign_recipients enable row level security;
+create policy zalo_recipients_all on zalo_campaign_recipients for all using (
+  exists (
+    select 1 from zalo_campaigns c
+    where c.id = campaign_id
+      and (is_admin() or (my_role() = 'manager' and c.team_id = my_team_id()) or c.created_by = auth.uid())
+  )
+) with check (
+  exists (select 1 from zalo_campaigns c where c.id = campaign_id)
+);
+
 -- Team_id mặc định lấy theo profile của người tạo (trigger, tránh phải gửi từ client).
 create or replace function set_team_id() returns trigger
 language plpgsql as $$
@@ -400,7 +438,7 @@ end $$;
 do $$
 declare t text;
 begin
-  foreach t in array array['leads','buyer_intakes','seller_intakes','listings','deals','commissions','tasks','appointments','open_houses','marketing_campaigns']
+  foreach t in array array['leads','buyer_intakes','seller_intakes','listings','deals','commissions','tasks','appointments','open_houses','marketing_campaigns','zalo_campaigns']
   loop
     execute format('create trigger trg_set_team_id before insert on %I for each row execute function set_team_id()', t);
   end loop;
